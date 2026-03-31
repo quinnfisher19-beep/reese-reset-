@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reset">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1f2e">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Reset Routine</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #1a1f2e;
+    --card: #232839;
+    --card-hover: #2a3048;
+    --accent: #7eb8a8;
+    --accent-soft: rgba(126, 184, 168, 0.12);
+    --accent-glow: rgba(126, 184, 168, 0.25);
+    --text: #e8e6e1;
+    --text-dim: #8b8d95;
+    --text-mid: #b5b7be;
+    --done: #5a7a6f;
+    --done-bg: rgba(90, 122, 111, 0.15);
+    --warning: #d4956a;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+    padding-bottom: 100px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    padding: 30px 0 10px;
+    margin-bottom: 24px;
+  }
+
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  header p {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .reminder-banner {
+    background: var(--accent-soft);
+    border: 1px solid rgba(126, 184, 168, 0.2);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+
+  .reminder-banner p {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--accent);
+    line-height: 1.5;
+  }
+
+  .step {
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+  }
+
+  .step.active {
+    border-color: var(--accent-glow);
+    box-shadow: 0 0 20px rgba(126, 184, 168, 0.08);
+  }
+
+  .step.completed {
+    background: var(--done-bg);
+    border-color: transparent;
+  }
+
+  .step.completed .step-header {
+    opacity: 0.6;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    padding: 18px;
+    cursor: pointer;
+    gap: 14px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  .step.completed .step-number {
+    background: var(--done);
+    color: var(--bg);
+  }
+
+  .step.completed .step-number::after {
+    content: '✓';
+    font-size: 16px;
+  }
+
+  .step.completed .step-number span { display: none; }
+
+  .step-title {
+    flex: 1;
+  }
+
+  .step-title h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .step-title .time-est {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .step-expand {
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .step.active .step-expand { transform: rotate(180deg); }
+
+  .step-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .step.active .step-body {
+    max-height: 800px;
+  }
+
+  .step-content {
+    padding: 0 18px 18px;
+  }
+
+  .step-content p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-mid);
+    margin-bottom: 12px;
+  }
+
+  .step-content p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .step-content .how {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  .step-content .how h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .step-content .how p {
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  .step-content .how p:last-child { margin-bottom: 0; }
+
+  .done-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .done-btn:hover {
+    background: var(--accent-glow);
+  }
+
+  .done-btn:active {
+    transform: scale(0.98);
+  }
+
+  .reset-section {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .reset-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .progress-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 16px 20px;
+    z-index: 10;
+  }
+
+  .progress-inner {
+    max-width: 420px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .progress-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .complete-msg {
+    display: none;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 10px;
+  }
+
+  .complete-msg.show { display: block; }
+
+  .complete-msg h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .complete-msg p {
+    color: var(--text-mid);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 440px) {
+    body { padding: 14px; padding-bottom: 90px; }
+    header { padding: 20px 0 6px; }
+    header h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>The Reset Routine</h1>
+    <p>When everything feels like too much, start here.</p>
+  </header>
+
+  <div class="reminder-banner">
+    <p>You have never once failed to get it done.<br>This time is no different.</p>
+  </div>
+
+  <div id="steps-container"></div>
+
+  <div class="complete-msg" id="completeMsg">
+    <h2>You've got a plan now.</h2>
+    <p>The overwhelm was lying to you. Look at your list — it's finite, it's scheduled, and you've done harder things than this. Go knock out that first ugly draft.</p>
+  </div>
+
+  <div class="reset-section">
+    <button class="reset-btn" onclick="resetAll()">Start Over</button>
+  </div>
+</div>
+
+<div class="progress-bar">
+  <div class="progress-inner">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text" id="progressText">0 of 6</div>
+  </div>
+</div>
+
+<script>
+const steps = [
+  {
+    title: "Stop & Breathe",
+    time: "2 minutes",
+    body: `<p>Before anything else — pause. The panic is telling you there's no time for this. <strong>The panic is wrong.</strong> Two minutes here saves an hour of spiraling.</p>
+    <div class="how">
+      <h4>Do this</h4>
+      <p>Put your phone face down. Close your eyes. Breathe in for 4 counts, hold for 4, out for 6. Do this 5 times.</p>
+      <p>When you open your eyes, remind yourself: <strong>"I always get it done. I will get it done this time too."</strong></p>
+    </div>`
+  },
+  {
+    title: "Brain Dump — Get It All Out",
+    time: "5 minutes",
+    body: `<p>Open Todoist, a notes app, or grab a piece of paper. <strong>Write down every single thing</strong> that's stressing you out. Assignments, tests, practices, errands — everything. Don't organize. Don't prioritize. Just dump.</p>
+    <div class="how">
+      <h4>Why this works</h4>
+      <p>Right now it feels infinite because it's swirling in your head. Once it's written down, you can see the edges of it. <strong>It's a list, not a monster.</strong></p>
+    </div>`
+  },
+  {
+    title: "Mark the Real Deadlines",
+    time: "3 minutes",
+    body: `<p>Go through your list and write the <strong>actual due date</strong> next to each item. Not when you think you should finish — when it's actually due.</p>
+    <div class="how">
+      <h4>Be honest with yourself</h4>
+      <p>How many things are due <strong>tomorrow</strong>? That's your only emergency.</p>
+      <p>How many are due <strong>this week</strong>? Those are next.</p>
+      <p>Everything else? <strong>It can wait and it will be fine.</strong></p>
+    </div>`
+  },
+  {
+    title: "Pick Your Top 3 for Today",
+    time: "2 minutes",
+    body: `<p>Look at your deadlines. Choose a maximum of <strong>3 things</strong> to work on today. That's it. Not 7. Not everything. Three.</p>
+    <div class="how">
+      <h4>How to choose</h4>
+      <p><strong>First:</strong> Anything due tomorrow.</p>
+      <p><strong>Then:</strong> The thing that's causing the most anxiety.</p>
+      <p><strong>Then:</strong> Something quick you can finish to build momentum.</p>
+      <p>Everything else goes on tomorrow's list. Give yourself permission to ignore it until then.</p>
+    </div>`
+  },
+  {
+    title: "Time Block It",
+    time: "3 minutes",
+    body: `<p>Open your calendar or just write it on paper. Assign each of your 3 tasks a <strong>specific time window</strong> tonight or tomorrow.</p>
+    <div class="how">
+      <h4>The rules</h4>
+      <p><strong>Be realistic</strong> — don't schedule 4 hours of work into 2 hours.</p>
+      <p><strong>Build in breaks</strong> — 45 min work, 15 min off.</p>
+      <p><strong>Set an end time</strong> — when the block is over, you move on regardless. Done is better than perfect. You can always come back to polish later.</p>
+      <p><strong>Put your phone in another room</strong> during work blocks.</p>
+    </div>`
+  },
+  {
+    title: "Start the Ugly First Draft",
+    time: "Right now",
+    body: `<p>Pick task #1. Set a timer for 25 minutes. <strong>Your only goal is the worst version that technically counts as done.</strong></p>
+    <div class="how">
+      <h4>The ugly draft rule</h4>
+      <p>It doesn't have to be good. It has to <strong>exist</strong>. You can't edit a blank page, but you can always improve something that's already there.</p>
+      <p>You will make it better — you always do. But the hardest part is starting, and <strong>you just did.</strong></p>
+    </div>`
+  }
+];
+
+const container = document.getElementById('steps-container');
+
+steps.forEach((step, i) => {
+  const el = document.createElement('div');
+  el.className = 'step' + (i === 0 ? ' active' : '');
+  el.id = `step-${i}`;
+  el.innerHTML = `
+    <div class="step-header" onclick="toggleStep(${i})">
+      <div class="step-number"><span>${i + 1}</span></div>
+      <div class="step-title">
+        <h3>${step.title}</h3>
+        <div class="time-est">${step.time}</div>
+      </div>
+      <div class="step-expand">⌄</div>
+    </div>
+    <div class="step-body">
+      <div class="step-content">
+        ${step.body}
+        <button class="done-btn" onclick="completeStep(${i}, event)">Done — next step →</button>
+      </div>
+    </div>
+  `;
+  container.appendChild(el);
+});
+
+let completed = new Set();
+
+function toggleStep(index) {
+  const step = document.getElementById(`step-${index}`);
+  if (step.classList.contains('completed')) return;
+
+  document.querySelectorAll('.step').forEach(s => {
+    if (s.id !== `step-${index}` && !s.classList.contains('completed')) {
+      s.classList.remove('active');
+    }
+  });
+  step.classList.toggle('active');
+}
+
+function completeStep(index, event) {
+  event.stopPropagation();
+  const step = document.getElementById(`step-${index}`);
+  step.classList.remove('active');
+  step.classList.add('completed');
+  completed.add(index);
+
+  updateProgress();
+
+  if (completed.size === steps.length) {
+    document.getElementById('completeMsg').classList.add('show');
+    return;
+  }
+
+  // Open next incomplete step
+  for (let i = index + 1; i < steps.length; i++) {
+    if (!completed.has(i)) {
+      setTimeout(() => {
+        const next = document.getElementById(`step-${i}`);
+        next.classList.add('active');
+        next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+      break;
+    }
+  }
+}
+
+function updateProgress() {
+  const pct = (completed.size / steps.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${completed.size} of ${steps.length}`;
+}
+
+function resetAll() {
+  completed.clear();
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.remove('completed', 'active');
+    const numEl = s.querySelector('.step-number');
+    if (!numEl.querySelector('span')) {
+      numEl.innerHTML = `<span>${i + 1}</span>`;
+    }
+  });
+  document.getElementById(`step-0`).classList.add('active');
+  document.getElementById('completeMsg').classList.remove('show');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
+
+{
+  "name": "The Reset Routine",
+  "short_name": "Reset",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1a1f2e",
+  "theme_color": "#1a1f2e",
+  "description": "When everything feels like too much, start here.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
